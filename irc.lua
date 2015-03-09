@@ -3,7 +3,7 @@ server = {"irc.freenode.net", 6667}
 channels = {"#esp8266"}
 dead = true
 
-DEBUG = true
+DEBUG = false
 
 function connection(irc)
     dead = false
@@ -72,7 +72,7 @@ end
 function handle_message(usr, chnl, msg)
     if chnl == nick then chnl = usr end
     print("Message from " .. usr .. " in " .. chnl .. ": " .. msg)
-    if chnl == usr or msg:find(nick) then
+    if msg:find(nick) then
         send_message(chnl, "Hi there " .. usr)
     elseif msg:find("~") == 1 then
         --~google esp8266 irc bot
@@ -83,14 +83,16 @@ end
 
 function handle_command(chnl, cmd, args)
     if cmd == "google" then
-        send_message(chnl, "http://google.com/search&q=" .. url_encode(table.concat(args, " ")))
+        send_message(chnl, "http://google.com/search?q=" .. url_encode(table.concat(args, " ")))
     elseif cmd == "d" then
         if #args ~= 0 and #args ~= 1 then
             send_message(chnl, "Usage: ~d [sides] (default: 6)")
         end
-        local n = math.floor(tonumber(args[1]) or 6)
-        send_message("d" .. n .. " roll: " .. math.random(n))
-
+        --local n = math.floor(tonumber(args[1]) or 6)
+        --send_message(chnl, "d" .. n .. " roll: " .. math.random(n))
+          send_message(chnl, "NYI")
+    elseif cmd == "source" then
+        send_message(chnl, "https://github.com/Ivoah/ESP8266-IRC-bot")
     end
 end
 
@@ -122,7 +124,7 @@ function url_encode(str)
   return str
 end
 
-math.randomseed(adc.read(0))
+--math.randomseed(adc.read(0))
 
 irc = net.createConnection(net.TCP, 0)
 irc:on("connection", connection)
